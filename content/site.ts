@@ -1,0 +1,27 @@
+// Site-wide copy, SEO defaults, and footer links — single source for non-section content.
+export const siteConfig = {
+  name: "GO Assistant",
+  domain: "goassistant.in",
+  url: "https://goassistant.in",
+  contactEmail: "hello@goassistant.in",
+  description:
+    "GO Assistant is the conversational sales associate for your online store — it understands how customers actually describe what they want.",
+  thesisLine:
+    "It doesn't matter what you sell. Your customers already know how to describe what they want — they just have no one to say it to.",
+  parentBrand: {
+    name: "GOBIGAI",
+    url: "https://gobigai.com",
+  },
+  social: {
+    linkedin: "#",
+    twitter: "#",
+    instagram: "#",
+  },
+} as const;
+
+export const seoDefaults = {
+  title: "GO Assistant — The sales associate your online store is missing",
+  description: siteConfig.description,
+  ogTitle: "GO Assistant",
+  ogDescription: siteConfig.thesisLine,
+} as const;

@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-navy: #0b1220;
+  --color-cobalt: #2952e3;
+  --color-sky: #7fb7ff;
+  --color-offwhite: #f4f6fb;
+  --color-amber: #f2a33c;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  @apply bg-navy font-body text-offwhite antialiased;
+}
+
+::selection {
+  @apply bg-cobalt/40 text-offwhite;
+}
