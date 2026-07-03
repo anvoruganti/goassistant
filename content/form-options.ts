@@ -10,9 +10,9 @@ export const categoryOptions: FormSelectOption[] = [
 ];
 
 export const monthlyOrderOptions: FormSelectOption[] = [
-  { value: "0-100", label: "0 – 100 orders/month" },
-  { value: "100-500", label: "100 – 500 orders/month" },
-  { value: "500-2000", label: "500 – 2,000 orders/month" },
+  { value: "0-100", label: "0 to 100 orders/month" },
+  { value: "100-500", label: "100 to 500 orders/month" },
+  { value: "500-2000", label: "500 to 2,000 orders/month" },
   { value: "2000+", label: "2,000+ orders/month" },
 ];
 
@@ -23,12 +23,12 @@ export const platformOptions: FormSelectOption[] = [
 ];
 
 export const foundingCohortCopy = {
-  title: "Founding 50",
-  subtitle: "Early access for operators who get it first",
+  title: "Founding 15",
+  subtitle: "First access for 15 stores that move early",
   benefits: [
-    "Locked-in pricing for life",
-    "Priority onboarding before public launch",
-    "Direct line to the founding team",
+    "Founding price, locked for life",
+    "You onboard before we open to everyone",
+    "A direct line to the founders",
   ],
-  spotsTotal: 50,
+  spotsTotal: 15,
 } as const;

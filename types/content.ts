@@ -38,6 +38,8 @@ export interface WaitlistFormData {
   monthlyOrders: string;
   platform: string;
   email: string;
+  phone: string;
+  phoneVerified: boolean;
 }
 
 export interface WaitlistFieldErrors {
@@ -48,6 +50,7 @@ export interface WaitlistFieldErrors {
   monthlyOrders?: string;
   platform?: string;
   email?: string;
+  phone?: string;
   form?: string;
 }
 
