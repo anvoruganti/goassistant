@@ -54,7 +54,7 @@ export function Gap() {
               <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-sky/70">
                 With GO Assistant — natural description
               </p>
-              <div className="ml-auto max-w-[90%] rounded-2xl rounded-br-sm bg-gradient-to-r from-cobalt to-[#3b6bff] px-3.5 py-2.5 text-sm leading-relaxed text-white">
+              <div className="ml-auto max-w-[90%] rounded-2xl rounded-br-sm bg-gradient-to-r from-cobalt to-[#52B868] px-3.5 py-2.5 text-sm leading-relaxed text-white">
                 &ldquo;Something lighter, brighter, with a smaller border design.&rdquo;
               </div>
               <div className="mt-2.5 flex items-center gap-2 text-xs text-emerald-300">

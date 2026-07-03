@@ -18,7 +18,7 @@ export default function OpenGraphImage() {
           flexDirection: "column",
           justifyContent: "center",
           padding: "64px",
-          backgroundColor: "#0B1220",
+          backgroundColor: "#001428",
           color: "#F4F6FB",
         }}
       >
@@ -27,7 +27,7 @@ export default function OpenGraphImage() {
             fontSize: 48,
             fontWeight: 700,
             marginBottom: 24,
-            color: "#7FB7FF",
+            color: "#45A055",
           }}
         >
           {siteConfig.name}
@@ -46,7 +46,7 @@ export default function OpenGraphImage() {
           style={{
             marginTop: 48,
             fontSize: 20,
-            color: "#2952E3",
+            color: "#6BC47A",
           }}
         >
           {siteConfig.domain}

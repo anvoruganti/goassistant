@@ -9,11 +9,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        navy: "#0B1220",
-        cobalt: "#2952E3",
-        sky: "#7FB7FF",
+        navy: "#001428",
+        cobalt: "#45A055",
+        sky: "#6BC47A",
         offwhite: "#F4F6FB",
-        amber: "#F2A33C",
+        amber: "#52B868",
       },
       fontFamily: {
         display: ["var(--font-geist-sans)", "system-ui", "sans-serif"],

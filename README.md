@@ -1,6 +1,6 @@
 # GO Assistant Landing Page
 
-Validation landing page for [goassistant.in](https://goassistant.in): a conversational AI widget for D2C e-commerce stores. Captures waitlist signups via Supabase with phone OTP verification.
+Validation landing page for [goassistant.in](https://goassistant.in): a conversational AI widget for D2C e-commerce stores. Captures waitlist signups via Supabase with email OTP verification.
 
 ## Stack
 
@@ -8,7 +8,8 @@ Validation landing page for [goassistant.in](https://goassistant.in): a conversa
 - TypeScript (strict)
 - Tailwind CSS
 - Framer Motion
-- Supabase (database + phone OTP auth)
+- Supabase (database + email OTP auth)
+- Vercel Analytics
 
 ## Getting started
 
@@ -41,18 +42,18 @@ Apply the migration in [`supabase/migrations/001_waitlist_signups.sql`](supabase
 supabase db push
 ```
 
-This creates the `waitlist_signups` table (including `phone` and `phone_verified`), RLS policies, and RPC functions for live count and queue position.
+This creates the `waitlist_signups` table (including `email_verified`), RLS policies, and RPC functions for live count and queue position.
 
-### 4. Enable phone OTP in Supabase
+### 4. Enable email OTP in Supabase
 
-For the waitlist form's phone verification to work:
+For the waitlist form's email verification to work:
 
-1. In Supabase Dashboard, go to **Authentication → Providers → Phone**
-2. Enable phone sign-in
-3. Configure an SMS provider (Twilio, MessageBird, etc.)
-4. Under **Authentication → URL Configuration**, add your site URL to allowed redirect URLs if needed
+1. In Supabase Dashboard, go to **Authentication → Providers → Email** and ensure Email is enabled.
+2. Under **Authentication → Email Templates → Confirm signup**, include `{{ .Token }}` so users receive a 6-digit code (not just a link).
+3. Optionally add `{{ .Token }}` to **Magic link or OTP** for returning emails.
+4. Under **Authentication → URL Configuration**, add your site URL (`http://localhost:3000` for local dev).
 
-The form uses `signInWithOtp` and `verifyOtp` on the client. Submission is blocked until the phone is verified.
+The form uses `signUp` / `signInWithOtp` and `verifyOtp` on the client. Submission is blocked until the email is verified.
 
 ### 5. Run locally
 
@@ -66,7 +67,8 @@ Open [http://localhost:3000](http://localhost:3000).
 
 1. Push to GitHub and import the repo in Vercel.
 2. Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` as environment variables.
-3. Deploy. No additional config required.
+3. Enable **Analytics** in the Vercel project dashboard (the `<Analytics />` component is already in `app/layout.tsx`).
+4. Deploy.
 
 ## Project structure
 
@@ -82,10 +84,14 @@ public/images/    # Product photos (kurta, phone case, sofa)
 
 ## Waitlist form
 
-Collects: name, store name, store URL, category, monthly order volume, platform, email, and phone (verified via OTP).
+Collects: name, store name, store URL, category, monthly order volume, platform, and email (verified via OTP).
 
 On success, shows the user's queue position via the `get_waitlist_position` RPC.
 
 ## Founding cohort counter
 
 The **Founding 15** section shows spots remaining as `15 minus live signup count`. The bar and number update as people join (count revalidates every 60 seconds via `get_waitlist_count`).
+
+## Contact
+
+Questions? Email [help@gobigai.org](mailto:help@gobigai.org).

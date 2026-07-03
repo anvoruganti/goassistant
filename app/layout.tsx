@@ -1,5 +1,6 @@
 // Root layout — fonts, global metadata, and page shell for the landing page.
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { GeistSans } from "geist/font/sans";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { seoDefaults, siteConfig } from "@/content/site";
@@ -46,7 +47,10 @@ export default function RootLayout({
       lang="en"
       className={`${GeistSans.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="min-h-screen bg-navy font-body text-offwhite">{children}</body>
+      <body className="min-h-screen bg-navy font-body text-offwhite">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

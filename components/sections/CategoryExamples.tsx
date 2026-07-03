@@ -27,7 +27,7 @@ export function CategoryExamples() {
                 <span className="text-[10px] text-offwhite/30">customer says</span>
               </div>
               <div className="flex flex-1 flex-col gap-4 p-4">
-                <div className="ml-auto max-w-[92%] rounded-2xl rounded-br-sm bg-gradient-to-r from-cobalt/90 to-[#3b6bff]/90 px-3.5 py-2.5 text-sm leading-relaxed text-white">
+                <div className="ml-auto max-w-[92%] rounded-2xl rounded-br-sm bg-gradient-to-r from-cobalt/90 to-[#52B868]/90 px-3.5 py-2.5 text-sm leading-relaxed text-white">
                   &ldquo;{example.customerMessage}&rdquo;
                 </div>
                 <div className="mt-auto overflow-hidden rounded-xl border border-white/10 bg-white/[0.03]">

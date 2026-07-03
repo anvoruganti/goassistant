@@ -1,4 +1,4 @@
-// Waitlist form — inline validation, phone OTP verification (Supabase), and server action submission.
+// Waitlist form. Inline validation, email OTP verification (Supabase), and server action submission.
 "use client";
 
 import { useState, useTransition } from "react";
@@ -8,7 +8,7 @@ import {
   monthlyOrderOptions,
   platformOptions,
 } from "@/content/form-options";
-import { normalizePhone, validatePhone, validateWaitlistForm } from "@/lib/validation";
+import { validateEmail, validateWaitlistForm } from "@/lib/validation";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { SelectField, TextField } from "@/components/ui/Field";
@@ -25,8 +25,7 @@ const emptyForm: WaitlistFormData = {
   monthlyOrders: "",
   platform: "",
   email: "",
-  phone: "",
-  phoneVerified: false,
+  emailVerified: false,
 };
 
 type OtpStep = "collect" | "sent" | "verified";
@@ -38,7 +37,6 @@ export function WaitlistForm() {
   const [queuePosition, setQueuePosition] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  // Phone OTP state
   const [otp, setOtp] = useState("");
   const [otpStep, setOtpStep] = useState<OtpStep>("collect");
   const [otpBusy, setOtpBusy] = useState(false);
@@ -51,19 +49,19 @@ export function WaitlistForm() {
     setForm((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: undefined, form: undefined }));
 
-    // Editing the phone invalidates any prior verification.
-    if (name === "phone") {
+    // Editing the email invalidates any prior verification.
+    if (name === "email") {
       setOtpStep("collect");
       setOtp("");
       setOtpMessage(null);
-      setForm((prev) => ({ ...prev, phone: value, phoneVerified: false }));
+      setForm((prev) => ({ ...prev, email: value, emailVerified: false }));
     }
   };
 
-  const sendOtp = async () => {
-    const phoneError = validatePhone(form.phone);
-    if (phoneError) {
-      setErrors((prev) => ({ ...prev, phone: phoneError }));
+  const sendCode = async () => {
+    const emailError = validateEmail(form.email);
+    if (emailError) {
+      setErrors((prev) => ({ ...prev, email: emailError }));
       return;
     }
 
@@ -71,25 +69,33 @@ export function WaitlistForm() {
     setOtpMessage(null);
     try {
       const supabase = createBrowserSupabaseClient();
-      const { error } = await supabase.auth.signInWithOtp({
-        phone: normalizePhone(form.phone),
-      });
+      const email = form.email.trim().toLowerCase();
+      const tempPassword = `Ga-${crypto.randomUUID()}9`;
+
+      // Confirm signup template — new waitlist emails.
+      let { error } = await supabase.auth.signUp({ email, password: tempPassword });
+
+      // Returning email — resend via magic-link/OTP template.
+      if (error?.message?.toLowerCase().includes("already")) {
+        ({ error } = await supabase.auth.signInWithOtp({ email }));
+      }
+
       if (error) {
         setOtpMessage(error.message);
       } else {
         setOtpStep("sent");
-        setOtpMessage(`We sent a 6-digit code to ${normalizePhone(form.phone)}.`);
+        setOtpMessage(`We sent a 6-digit code to ${email}.`);
       }
     } catch {
-      setOtpMessage("Phone verification is not configured yet. Please try again later.");
+      setOtpMessage("Could not send the code right now. Please try again.");
     } finally {
       setOtpBusy(false);
     }
   };
 
-  const verifyOtp = async () => {
-    if (otp.trim().length < 4) {
-      setOtpMessage("Enter the code we sent you.");
+  const verifyCode = async () => {
+    if (otp.trim().length < 6) {
+      setOtpMessage("Enter the 6-digit code we emailed you.");
       return;
     }
 
@@ -97,18 +103,22 @@ export function WaitlistForm() {
     setOtpMessage(null);
     try {
       const supabase = createBrowserSupabaseClient();
-      const { error } = await supabase.auth.verifyOtp({
-        phone: normalizePhone(form.phone),
-        token: otp.trim(),
-        type: "sms",
-      });
+      const email = form.email.trim().toLowerCase();
+      const token = otp.trim();
+
+      // Confirm signup OTP first, then magic-link/OTP fallback for returning emails.
+      let { error } = await supabase.auth.verifyOtp({ email, token, type: "signup" });
+      if (error) {
+        ({ error } = await supabase.auth.verifyOtp({ email, token, type: "email" }));
+      }
+
       if (error) {
         setOtpMessage(error.message);
       } else {
         setOtpStep("verified");
         setOtpMessage(null);
-        setForm((prev) => ({ ...prev, phoneVerified: true }));
-        setErrors((prev) => ({ ...prev, phone: undefined }));
+        setForm((prev) => ({ ...prev, emailVerified: true }));
+        setErrors((prev) => ({ ...prev, email: undefined }));
       }
     } catch {
       setOtpMessage("Could not verify the code. Please try again.");
@@ -126,8 +136,8 @@ export function WaitlistForm() {
       return;
     }
 
-    if (!form.phoneVerified) {
-      setErrors({ phone: "Verify your phone number to continue." });
+    if (!form.emailVerified) {
+      setErrors({ email: "Verify your email to continue." });
       return;
     }
 
@@ -142,8 +152,6 @@ export function WaitlistForm() {
 
       if (result.error?.toLowerCase().includes("email")) {
         setErrors({ email: result.error });
-      } else if (result.error?.toLowerCase().includes("phone")) {
-        setErrors({ phone: result.error });
       } else {
         setErrors({ form: result.error });
       }
@@ -157,7 +165,7 @@ export function WaitlistForm() {
           <SectionHeader
             eyebrow="Reserve your spot"
             title="Join the waitlist"
-            subtitle="Tell us about your store. We'll reach out when your spot opens up."
+            subtitle="Tell us about your store and we'll reach out when your spot opens."
             align="center"
           />
         </RevealOnScroll>
@@ -252,31 +260,20 @@ export function WaitlistForm() {
                 required
               />
 
-              <TextField
-                label="Email"
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                error={errors.email}
-                required
-                autoComplete="email"
-              />
-
-              {/* Phone + OTP verification */}
+              {/* Email + verification */}
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="phone" className="text-sm font-medium text-offwhite/80">
-                  Phone number
+                <label htmlFor="email" className="text-sm font-medium text-offwhite/80">
+                  Email
                 </label>
                 <div className="flex gap-2">
                   <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    inputMode="tel"
-                    placeholder="+91 98765 43210"
-                    autoComplete="tel"
-                    value={form.phone}
+                    id="email"
+                    name="email"
+                    type="email"
+                    inputMode="email"
+                    placeholder="you@yourstore.com"
+                    autoComplete="email"
+                    value={form.email}
                     onChange={handleChange}
                     disabled={otpStep === "verified"}
                     className="flex-1 rounded-lg border border-offwhite/15 bg-navy/60 px-4 py-3 text-offwhite placeholder:text-offwhite/40 focus:border-cobalt focus:outline-none focus:ring-1 focus:ring-cobalt disabled:opacity-60"
@@ -288,7 +285,7 @@ export function WaitlistForm() {
                   ) : (
                     <Button
                       variant="secondary"
-                      onClick={sendOtp}
+                      onClick={sendCode}
                       disabled={otpBusy}
                       className="whitespace-nowrap px-4 py-3"
                     >
@@ -300,9 +297,9 @@ export function WaitlistForm() {
                     </Button>
                   )}
                 </div>
-                {errors.phone ? (
+                {errors.email ? (
                   <p className="text-sm text-red-400" role="alert">
-                    {errors.phone}
+                    {errors.email}
                   </p>
                 ) : null}
 
@@ -319,7 +316,7 @@ export function WaitlistForm() {
                     />
                     <Button
                       variant="primary"
-                      onClick={verifyOtp}
+                      onClick={verifyCode}
                       disabled={otpBusy}
                       className="whitespace-nowrap px-4 py-3"
                     >
@@ -347,9 +344,9 @@ export function WaitlistForm() {
               >
                 {isPending ? "Reserving…" : "Reserve my spot"}
               </Button>
-              {!form.phoneVerified ? (
+              {!form.emailVerified ? (
                 <p className="text-center text-xs text-offwhite/40">
-                  We verify your number so we can reach you when your spot opens.
+                  We verify your email so we can reach you when your spot opens.
                 </p>
               ) : null}
             </form>

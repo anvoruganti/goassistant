@@ -1,7 +1,7 @@
 // Waitlist data layer — swappable abstraction over Supabase insert/count/position queries.
 import { unstable_cache } from "next/cache";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { normalizePhone, normalizeStoreUrl } from "@/lib/validation";
+import { normalizeStoreUrl } from "@/lib/validation";
 import type { WaitlistFormData, WaitlistSubmitResult } from "@/types/content";
 
 async function fetchWaitlistCount(): Promise<number> {
@@ -44,8 +44,7 @@ export async function submitWaitlistEntry(
       monthly_orders: data.monthlyOrders,
       platform: data.platform,
       email: data.email.trim().toLowerCase(),
-      phone: normalizePhone(data.phone),
-      phone_verified: data.phoneVerified,
+      email_verified: data.emailVerified,
     })
     .select("id")
     .single();

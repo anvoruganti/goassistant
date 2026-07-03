@@ -20,7 +20,7 @@ export function Hero() {
           {/* Copy column */}
           <div>
             <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/10 glass px-3.5 py-1.5 text-xs font-medium text-offwhite/70">
-              <span className="inline-flex h-1.5 w-1.5 rounded-full bg-amber animate-pulse" />
+              <span className="inline-flex h-1.5 w-1.5 rounded-full bg-cobalt animate-pulse" />
               Now onboarding the {foundingCohortCopy.title}
             </div>
 
@@ -43,7 +43,7 @@ export function Hero() {
             </blockquote>
 
             <p className="mt-6 max-w-xl text-base leading-relaxed text-offwhite/60">
-              <span className="font-semibold text-sky">That&apos;s GO Assistant.</span>{" "}
+              <span className="font-semibold text-cobalt">That&apos;s GO Assistant.</span>{" "}
               {heroProductIntro}
             </p>
 

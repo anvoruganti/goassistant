@@ -16,10 +16,10 @@ export async function submitWaitlistAction(
     };
   }
 
-  if (!data.phoneVerified) {
+  if (!data.emailVerified) {
     return {
       success: false,
-      error: "Please verify your phone number first.",
+      error: "Please verify your email first.",
     };
   }
 

@@ -9,19 +9,17 @@ create table if not exists waitlist_signups (
   monthly_orders text not null,
   platform text not null,
   email text not null unique,
-  phone text,
-  phone_verified boolean not null default false,
+  email_verified boolean not null default false,
   status text not null default 'pending'
 );
 
--- If the table already existed from an earlier run, add the phone columns.
-alter table waitlist_signups add column if not exists phone text;
-alter table waitlist_signups add column if not exists phone_verified boolean not null default false;
+-- If the table already existed from an earlier run, add the email_verified column.
+alter table waitlist_signups add column if not exists email_verified boolean not null default false;
 
 alter table waitlist_signups enable row level security;
 
--- Anyone (anon or a phone-verified authenticated visitor) may insert their own row.
 drop policy if exists "anon_insert_waitlist" on waitlist_signups;
+drop policy if exists "public_insert_waitlist" on waitlist_signups;
 create policy "public_insert_waitlist"
   on waitlist_signups
   for insert
